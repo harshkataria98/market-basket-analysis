@@ -1,0 +1,22 @@
+library(arules)
+library(arulesViz)
+library(datasets)
+library(splitstackshape)
+
+
+
+transactions  <- read.csv("data.csv")
+colnames(transactions)[1] <- "V1"
+summary(transactions)
+transactions <-  cSplit(transactions, "V1", ",")
+
+rules <- apriori(transactions, parameter = list(support = 0.001, confidence = 0.08, target="rules", minlen = 2, maxlen = 5))
+rules  <- sort(rules , decreasing = TRUE,by ="confidence")
+
+inspect(rules[1:15])
+#Minimum Support is 0.10 and Confidence 0.80                                                      
+df = data.frame(
+  lhs = labels(lhs(rules)),
+  rhs = labels(rhs(rules)),
+  rules@quality)
+write.csv(df,"mba-march-output.csv")
